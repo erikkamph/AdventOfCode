@@ -105,7 +105,7 @@ let Main argv =
         let! filter = GetFilter()
         let! possible = TraverseGames games filter
 
-        possible |> List.filter (fun item -> item.IsPossible) |> List.map (fun item -> item.Number) |> List.sum |> printfn "%d"
+        possible |> List.filter (fun item -> item.IsPossible) |> List.map (fun item -> item.Number) |> List.sum |> printfn "Sum of possible games: %d"
         games |> List.map (
             fun item ->
                 let mutable maxred = 0
@@ -126,7 +126,7 @@ let Main argv =
                 mulres
         )
         |> List.sum
-        |> printfn "%d"
+        |> printfn "Sum of power of all games: %d"
 
         return 0
     }
