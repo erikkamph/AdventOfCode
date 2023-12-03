@@ -84,7 +84,7 @@ let rec TraverseGames (games: Game list) (filter: Filter) =
 [<EntryPoint>]
 let Main argv =
     async {
-        let! content = GetFileContents(@"input_two.txt")
+        let! content = GetFileContents(@"example.txt")
         let games = content |> Array.map (fun item -> ParseGame item) |> List.ofArray
         let! filter = GetFilter()
         let! possible = TraverseGames games filter
