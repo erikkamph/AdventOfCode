@@ -1,10 +1,8 @@
 # Advent of Code
 
-<details>
-<summary>Table of Contents</summary>
+## Table of contents
 1. [Training resources](#training-resources)
 2. [Structure](#structure)
-</details>
 
 ## Training resources
 - [https://fsharp.org/](https://fsharp.org/)
