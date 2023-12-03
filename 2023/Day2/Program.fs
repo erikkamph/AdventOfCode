@@ -105,7 +105,28 @@ let Main argv =
         let! filter = GetFilter()
         let! possible = TraverseGames games filter
 
-        possible |> List.filter (fun item -> item.IsPossible = true) |> List.map (fun item -> item.Number) |> List.sum |> printfn "%d"
+        possible |> List.filter (fun item -> item.IsPossible) |> List.map (fun item -> item.Number) |> List.sum |> printfn "%d"
+        games |> List.map (
+            fun item ->
+                let mutable maxred = 0
+                let mutable maxgreen = 0
+                let mutable maxblue = 0
+                item.Sets
+                |> List.concat
+                |> List.iter (
+                    fun item ->
+                        match item.color with
+                        | Color.Red -> maxred <- if maxred < item.count then item.count else maxred
+                        | Color.Green -> maxgreen <- if maxgreen < item.count then item.count else maxgreen
+                        | Color.Blue -> maxblue <- if maxblue < item.count then item.count else maxblue
+                        | _ -> printfn "Haha"
+                )
+                let res = Math.BigMul(maxred, maxgreen)
+                let mulres = Math.BigMul(res |> Convert.ToInt32, maxblue)
+                mulres
+        )
+        |> List.sum
+        |> printfn "%d"
 
         return 0
     }
