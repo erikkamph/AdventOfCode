@@ -2,22 +2,6 @@
 open Home.Types
 open System
 
-type Color =
-    | Unknown = -1
-    | Red = 0
-    | Green = 1
-    | Blue = 2
-
-type Item() =
-    member val color: Color = Color.Unknown with get, set
-    member val count = 0 with get, set
-
-type Game() =
-    member val Sets: Item list list = [] with get, set
-    member val Name = "" with get, set
-    member val Number = 0 with get, set
-    member val IsPossible = true with get, set
-
 let MakeSetsOfArray (sets: string array) =
     sets
     |> Array.map (
@@ -100,12 +84,12 @@ let rec TraverseGames (games: Game list) (filter: Filter) =
 [<EntryPoint>]
 let Main argv =
     async {
-        let! content = GetFileContents(@"input_two.txt")
+        let! content = GetFileContents(@"example.txt")
         let games = content |> Array.map (fun item -> ParseGame item) |> List.ofArray
         let! filter = GetFilter()
         let! possible = TraverseGames games filter
 
-        possible |> List.filter (fun item -> item.IsPossible) |> List.map (fun item -> item.Number) |> List.sum |> printfn "%d"
+        possible |> List.filter (fun item -> item.IsPossible) |> List.map (fun item -> item.Number) |> List.sum |> printfn "Sum of possible games: %d"
         games |> List.map (
             fun item ->
                 let mutable maxred = 0
@@ -126,7 +110,7 @@ let Main argv =
                 mulres
         )
         |> List.sum
-        |> printfn "%d"
+        |> printfn "Sum of power of all games: %d"
 
         return 0
     }
