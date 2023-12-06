@@ -2,3 +2,4 @@
 **/obj
 **/input*.txt
 **/*.json
+.fake
