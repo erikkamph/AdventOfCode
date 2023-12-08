@@ -20,7 +20,6 @@ def run(start_key: int, mapping: dict, instructions: str):
     paths = []
     current = starting_points[start_key]
     truthy = True
-    print(starting_points[start_key])
     while truthy:
         for s in range(len(instructions)):
             paths.append(current)
