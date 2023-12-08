@@ -1,8 +1,8 @@
-namespace Home
+namespace AdventOfCode
 
 open System.IO
 open System.Text
-open Home.Types
+open AdventOfCode.Types
 
 module Helpers =
     let GetFileContents (fileName: string) =

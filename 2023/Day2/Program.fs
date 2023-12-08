@@ -1,5 +1,5 @@
-﻿open Home.Helpers
-open Home.Types
+﻿open AdventOfCode.Helpers
+open AdventOfCode.Types
 open System
 
 let MakeSetsOfArray (sets: string array) =

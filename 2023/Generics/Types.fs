@@ -1,4 +1,4 @@
-namespace Home
+namespace AdventOfCode
 
 module Types =
     type Colors = { Red: int; Green: int; Blue: int }
@@ -28,3 +28,11 @@ module Types =
         member val Name = "" with get, set
         member val Number = 0 with get, set
         member val IsPossible = true with get, set
+    
+    type Hand() =
+        member val Bid = 0 with get, set
+        member val Weight = 0 with get, set
+        member val Hand = "" with get, set
+        member val CountOfC: (char*int) list = [] with get, set
+        member val FinalWeight = 0.0 with get, set
+        member val GameKindWeight = 0 with get, set
