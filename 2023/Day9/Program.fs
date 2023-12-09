@@ -15,7 +15,6 @@ module Main =
             while not(this.AllZeroes) do
                 let next =
                     this.NumberSequence
-                    |> Array.copy
                     |> Array.mapi (
                         fun idx item ->
                             if idx + 1 < this.NumberSequence.Length then
@@ -45,42 +44,35 @@ module Main =
                 this.NumberDifferences[idx] <- Array.insertAt 0 (curr - prev) this.NumberDifferences[idx]
             this.FirstNumber <- this.NumberDifferences[this.NumberDifferences.Length - 1][0]
 
+        member this.Run() =
+            this.Calulator()
+            this.LookBackward()
+            this.LookForward()
+
     [<EntryPoint>]
     let main argv =
         async {
             let file = @"input.txt"
             let contents = File.ReadAllLines(file)
 
-            printfn "Starting %d threads for calculating differences for all numbers in the series" contents.Length
-            let mutable threads = []
-            for row in contents do
-                let input = row.Split() |> Array.map (fun t -> t |> Double.Parse)
-                let sequencer = new SequenceWorker(input)
-                let thread = new Thread(new ThreadStart(sequencer.Calulator))
-                threads <- List.append threads [(input, sequencer, thread)]
-                thread.Start()
-                thread.Join()
+            let mutable forward, backward = (0.0, 0.0)
+            contents
+            |> Array.map (
+                fun row ->
+                    let input = row.Split() |> Array.map(fun item -> item |> Double.Parse)
+                    let sequencer = new SequenceWorker(input)
+                    let thread = new Thread(new ThreadStart(sequencer.Run))
+                    thread.Start()
+                    (sequencer, thread)
+            )
+            |> Array.iter (
+                fun (sequencer, thread) ->
+                    forward <- forward + sequencer.LastNumber
+                    backward <- backward + sequencer.FirstNumber
+            )
             
-            printfn "Starting %d threads for forward and backward extrapolation" (contents.Length * 2)
-            let mutable new_threads = []
-            for (input, sequencer, thread) in threads do
-                thread.Join()
-                let t2 = new Thread(new ThreadStart(sequencer.LookBackward))
-                let t3 = new Thread(new ThreadStart(sequencer.LookForward))
-                new_threads <- List.append new_threads [(input, sequencer, t2, t3)]
-                t2.Start()
-                t3.Start()
-            
-            let mutable backward = 0.0
-            let mutable forward = 0.0
-            for (input, sequencer, t1, t2) in new_threads do
-                t1.Join()
-                t2.Join()
-                forward <- forward + sequencer.LastNumber
-                backward <- backward + sequencer.FirstNumber
-
-            printfn "Sum of all predicted numbers for forward extrapolation in part 1: %.0f" forward
-            printfn "Sum of all predicted numbers for backward extrapolation in part 2: %.0f" backward
+            printfn "Forward extrapolated values: %.0f" forward
+            printfn "Backward extrapolated values: %.0f" backward
 
             return 0
         }
