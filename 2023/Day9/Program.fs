@@ -51,6 +51,7 @@ module Main =
             let file = @"input.txt"
             let contents = File.ReadAllLines(file)
 
+            printfn "Starting %d threads for calculating differences for all numbers in the series" contents.Length
             let mutable threads = []
             for row in contents do
                 let input = row.Split() |> Array.map (fun t -> t |> Double.Parse)
@@ -60,19 +61,26 @@ module Main =
                 thread.Start()
                 thread.Join()
             
+            printfn "Starting %d threads for forward and backward extrapolation" (contents.Length * 2)
             let mutable new_threads = []
             for (input, sequencer, thread) in threads do
                 thread.Join()
-                let thread2 = new Thread(new ThreadStart(sequencer.LookBackward))
-                new_threads <- List.append new_threads [(input, sequencer, thread2)]
-                thread2.Start()
+                let t2 = new Thread(new ThreadStart(sequencer.LookBackward))
+                let t3 = new Thread(new ThreadStart(sequencer.LookForward))
+                new_threads <- List.append new_threads [(input, sequencer, t2, t3)]
+                t2.Start()
+                t3.Start()
             
-            let mutable res = 0.0
-            for (input, sequencer, thread) in new_threads do
-                thread.Join()
-                res <- res + sequencer.FirstNumber
-                printfn "%f" sequencer.FirstNumber
-            printfn "Sum of all predicted numbers -> %f" res
+            let mutable backward = 0.0
+            let mutable forward = 0.0
+            for (input, sequencer, t1, t2) in new_threads do
+                t1.Join()
+                t2.Join()
+                forward <- forward + sequencer.LastNumber
+                backward <- backward + sequencer.FirstNumber
+
+            printfn "Sum of all predicted numbers for forward extrapolation in part 1: %.0f" forward
+            printfn "Sum of all predicted numbers for backward extrapolation in part 2: %.0f" backward
 
             return 0
         }
