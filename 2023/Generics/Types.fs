@@ -38,3 +38,19 @@ module Types =
         member val CountOfC: (char*int) list = [] with get, set
         member val FinalWeight = 0.0 with get, set
         member val GameKindWeight = 0 with get, set
+
+module RockTypes =
+    type Circular(x: int, y: int) =
+        member val Symbol = 'O' with get
+        member val Column = x with get
+        member val Row = y with get
+
+    type Square(x: int, y: int) = 
+        member val Symbol = '#' with get
+        member val Column = x with get
+        member val Row = y with get
+
+    type Stone =
+        | Squared of Square
+        | Round of Circular
+        | EmptySpace
