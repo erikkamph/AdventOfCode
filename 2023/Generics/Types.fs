@@ -1,5 +1,7 @@
 namespace AdventOfCode
 
+open System
+
 module Types =
     type Colors = { Red: int; Green: int; Blue: int }
     type Filter = { Colors: Colors }

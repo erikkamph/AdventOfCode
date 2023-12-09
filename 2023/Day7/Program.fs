@@ -4,12 +4,9 @@ open System
 open AdventOfCode.Types
 open AdventOfCode.Patterns
 
-let weight = "AKQJT98765432" |> Seq.mapi (fun idx item -> (item,  14 - idx + 1)) |> Map.ofSeq
+let weight = "23456789TJQKA" |> Seq.mapi (fun idx item -> (item,  idx + 1)) |> Map.ofSeq
 
 let CheckHand (h: Hand) =
-    let weight = h.Weight |> Convert.ToDouble
-    let mutable divider = 100.0
-    
     match h with
     | FiveOfAKind _ -> h.GameKindWeight <- 7
     | FourOfAKind _ -> h.GameKindWeight <- 6
@@ -20,7 +17,6 @@ let CheckHand (h: Hand) =
     | HighCard _ -> h.GameKindWeight <- 1
     | _ -> h.GameKindWeight <- -1
 
-    h.FinalWeight <- (weight / divider)
     h
 
 let SetWeightBasedOnCountOfEachChar (hand: Hand) =
@@ -28,34 +24,16 @@ let SetWeightBasedOnCountOfEachChar (hand: Hand) =
     hand.Weight <- hand.CountOfC |> List.map (fun (c, n) -> weight[c] * n) |> List.sum
     CheckHand hand
 
-let SortHands (hands: Hand list) = 
-    let mutable sorted = [hands[0]]
-    let mutable hasBeenInserted = false
+let SortHand (hands: Hand array) =
+    let mutable sorted = [||]
+    for key in weight.Keys do
+        hands
+        |> Array.copy
+        |> Array.filter (fun item -> item.Hand[0] = key)
+        |> Array.sortBy (fun item -> weight[item.Hand[0]], weight[item.Hand[1]], weight[item.Hand[2]], weight[item.Hand[3]], weight[item.Hand[4]])
+        |> fun t -> sorted <- Array.insertAt 0 t sorted
+    sorted |> Array.concat
 
-    for hand in hands[1..] do
-        hasBeenInserted <- false
-
-        sorted
-        |> List.iteri (
-            fun idx item ->
-                item.Hand |> Seq.iteri (
-                    fun i c ->
-                        if weight[c] > weight[hand.Hand[i]] && not(hasBeenInserted) then
-                            sorted <- List.insertAt idx hand sorted
-                            hasBeenInserted <- true
-                        elif weight[c] < weight[hand.Hand[i]] && not(hasBeenInserted) then
-                            sorted <- List.insertAt (idx + 1) hand sorted
-                            hasBeenInserted <- true
-                        elif item.GameKindWeight > hand.GameKindWeight && not(hasBeenInserted) then
-                            sorted <- List.insertAt idx hand sorted
-                            hasBeenInserted <- true
-                        elif item.GameKindWeight < hand.GameKindWeight && not(hasBeenInserted) then
-                            sorted <- List.insertAt (idx + 1) hand sorted
-                            hasBeenInserted <- true
-                        else ()
-                )
-        )
-    sorted
 
 [<EntryPoint>]
 let main argv =
@@ -91,20 +69,35 @@ let main argv =
                     hand.Hand <- parts[0]
                     hand |> SetWeightBasedOnCountOfEachChar
             )
-            |> List.ofArray
-        
-        printf "Initial scoring by hand: "
-        hands |> List.sortBy (fun t -> t.Weight) |> List.iter (fun item -> printf "(%A %d) " item.Hand item.Bid)
-        printfn ""
+            
+        let mutable sortedbytype = Array.init 7 (fun _ -> [||])
+        sortedbytype
+        |> Array.iteri (
+            fun i _ ->
+                sortedbytype[i] <- hands |> Array.copy |> Array.filter (fun hand -> hand.GameKindWeight = i + 1)
+                printfn "%d %d" sortedbytype[i].Length (i + 1)
+        )
 
-        hands
-        |> SortHands
-        |> fun l ->
-            printf "Sorted: "
-            l |> List.iter (fun t -> printf "(%s, %d) " t.Hand t.Bid)
-            printfn "" 
-            l
-        |> List.mapi (fun idx hand -> (idx + 1) * hand.Bid) |> List.sum |> printfn "Final sum of cards bid * rank:  %d"
+        let mutable sortedbytypebyscore = Array.init 7 (fun _ -> [||])
+        sortedbytype
+        |> Array.iteri (
+            fun idx cardhands ->
+                sortedbytypebyscore[idx] <- cardhands |> SortHand
+                //sortedbytypebyscore[idx] |> Array.iter (fun t -> printf $"{t.Weight},{t.Hand},{t.Bid} ")
+                //printfn ""
+        )
+
+        let score = sortedbytypebyscore |> Array.copy |> Array.concat |> Array.mapi (fun idx item -> (idx + 1) * item.Bid) |> Array.sum
+        if file = @"debug.txt" then
+            printfn $"Score: {score}"
+            assert (score = 816)
+        elif file = @"example.txt" then
+            printfn $"Score: {score}"
+            assert (score = 6440)
+        else
+            printfn $"Score: {score}"
+        
+
         return 0
     }
     |> Async.RunSynchronously
