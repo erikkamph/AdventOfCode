@@ -1,0 +1,36 @@
+﻿
+let mutable path = [(this.StartCol, this.StartRow)]
+while (this.CurrRow >= 0 && this.CurrRow <= this.Layout.Length - 1) && (this.CurrCol >= 0 && this.CurrCol <= this.Layout[0].Length - 1) do
+    match this.MoveTo with
+    | Direction.East -> this.CurrCol <- this.CurrCol + 1
+    | Direction.North -> this.CurrRow <- this.CurrRow - 1
+    | Direction.West -> this.CurrCol <- this.CurrCol - 1
+    | Direction.South -> this.CurrRow <- this.CurrRow + 1
+    | _ -> ()
+
+    if this.CurrRow >= 0 && this.CurrRow <= this.Layout.Length - 1 && this.CurrCol >= 0 && this.CurrCol <= this.Layout[this.CurrRow].Length - 1 then
+        path <- path @ [(this.CurrCol, this.CurrRow)]
+
+        if (this.Layout[this.CurrRow][this.CurrCol]).Symbol = '.' then
+            match this.MoveTo with
+            | Direction.East -> this.Layout[this.CurrRow][this.CurrCol] <- new Symbol('>')
+            | Direction.South -> this.Layout[this.CurrRow][this.CurrCol] <- new Symbol('V')
+            | Direction.North -> this.Layout[this.CurrRow][this.CurrCol] <- new Symbol('^')
+            | Direction.West -> this.Layout[this.CurrRow][this.CurrCol] <- new Symbol('<')
+            | _ -> ()
+
+        let symbol = this.Layout[this.CurrRow][this.CurrCol]
+        match symbol.Symbol with
+        | '|' | '-' ->
+            let (d1, d2) = (symbol :?> Splitter).SplitTo(this.MoveTo, this.CurrCol, this.CurrRow)
+            if d1 = Direction.None || d2 = Direction.None then
+                this.MoveTo <- if d1 = Direction.None && d2 <> Direction.None then d2 elif d1 <> Direction.None && d2 = Direction.None then d1 else this.MoveTo
+            elif d1 <> Direction.None && d2 <> Direction.None then
+                this.Paths <- this.Paths @ [path]
+                path <- []
+                this.NewPaths <- this.NewPaths @ [(this.CurrCol, this.CurrRow, d1)]
+                this.NewPaths <- this.NewPaths @ [(this.CurrCol, this.CurrRow, d2)]
+        | '/' | '\\' ->
+            let dir = (symbol :?> Mirror).ChangeDirection(this.MoveTo, this.CurrCol, this.CurrRow)
+            this.MoveTo <- if dir = Direction.None then this.MoveTo else dir
+        | _ -> ()
