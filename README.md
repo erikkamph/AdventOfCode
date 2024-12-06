@@ -18,6 +18,15 @@ root
 │   └── Generics
 │       ├── Helpers.fs
 │       └── Types.fs
+├── 2024
+    ├── day1
+    |   ├── ../modules (symlink)
+    |   └── main.py
+    └── modules
+        ├── config.py
+        ├── logger.py
+        └── parser.py
+
 ├── Archive
 ├── .gitignore
 └── README.md
