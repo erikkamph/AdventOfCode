@@ -8,32 +8,19 @@ if __name__ == "__main__":
 
     pattern = r'mul\(\d+,\d+\)'
     prog = re.compile(pattern)
+    matches = sum(list(map(lambda line: prog.findall(line), lines)), [])
 
-    matches = []
-    for line in lines:
-        matches = matches + prog.findall(line)
-
-    print(matches)
     pattern = r'mul\((\d+),(\d+)\)'
     prog = re.compile(pattern)
 
-    mul = []
-    for match in matches:
-        answer = prog.match(match)
-        first = int(answer.group(1))
-        second = int(answer.group(2))
-        mul.append(first * second)
-    
+    mul = list(map(lambda item: int(prog.match(item).group(1)) * int(prog.match(item).group(2)), matches))
     total = sum(mul)
     print(total)
 
     pattern = r"(mul|don't|do)\((\d+,\d+)?\)"
     prog = re.compile(pattern)
-    matches = []
-    for line in lines:
-        matches = matches + prog.findall(line)
+    matches = sum(list(map(lambda line: prog.findall(line), lines)), [])
     
-    print(matches)
     mul = []
     skip = False
     for match in matches:
