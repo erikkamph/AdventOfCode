@@ -4,3 +4,4 @@
 **/*.json
 .fake
 **/.vs
+__pycache__/
