@@ -29,6 +29,10 @@ parser.add_argument("-r", "--run",
                     help="Run with input data from input.txt",
                     action='store_const',
                     const='input.txt')
+parser.add_argument("-o", "--output",
+                    dest='output',
+                    help='Write to file',
+                    nargs='?')
 
 def parse():
     test = parser.parse_args(sys.argv[1:])
