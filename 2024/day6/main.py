@@ -14,6 +14,12 @@ def find_start_pos(lines: list[list[str]]):
     return 0, 0
 
 
+def scan_column(y: int, x: int, lines: list[list[str]]):
+    column = sum(list(map(labmda item: item[x], lines)), '')
+    if "#" in column:
+        return True, x - 1, y
+
+
 if __name__ == "__main__":
     parsed = parse()
     with open(parsed.file, 'r', encoding="utf-8") as f:
@@ -21,6 +27,9 @@ if __name__ == "__main__":
     
     y, x = find_start_pos(lines)
     visited_tiles = set()
+    
+    if parsed.part == 2:
+        loops = set()
 
     run = True
     while run:

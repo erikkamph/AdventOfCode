@@ -16,7 +16,7 @@ def count_occurrences(arr: list[int], number: int):
 
 if __name__ == "__main__":
     test = parse()
-    with open(test.run, 'r') as f:
+    with open(test.file, 'r') as f:
         lines = [i.strip('\n').split("   ") for i in f.readlines()]
 
     print(lines)
