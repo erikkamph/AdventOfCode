@@ -27,7 +27,7 @@ if __name__ == "__main__":
 
     operators = ['*', '+']
 
-    if parsed.part == "2":
+    if parsed.part == 2:
         operators.append('||')
     
     for k, (a, i, s, p, o) in enumerate(lines):
