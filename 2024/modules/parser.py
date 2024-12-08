@@ -36,7 +36,6 @@ parser.add_argument("-o", "--output",
 parser.add_argument("-p", "--part",
                     dest='part',
                     help='Run part 1 or 2',
-                    nargs=1,
                     type=int)
 
 def parse():
