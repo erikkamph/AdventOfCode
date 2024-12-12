@@ -1,6 +1,7 @@
 from argparse import ArgumentParser, RawTextHelpFormatter
 from .config import DAY
 import sys
+from modules.logger import FileHandler, logger
 
 parser = ArgumentParser(prog="AdventOfCode",
                         description=f"""
@@ -17,7 +18,7 @@ If you get gold stars, it means that it's working
 for your input as well. Otherwise, don't complain
 and fix the code yourself.
 """,
-                        epilog=f"Advent of code (https://adventofcode.com/)",
+                        epilog="Advent of code (https://adventofcode.com/)",
                         formatter_class=RawTextHelpFormatter)
 parser.add_argument("-e", "--example",
                     dest='file',
@@ -37,7 +38,20 @@ parser.add_argument("-p", "--part",
                     dest='part',
                     help='Run part 1 or 2',
                     type=int)
+parser.add_argument("-l", "--log",
+                    action='store_true',
+                    dest='log',
+                    help='Enables logging')
 
 def parse():
-    test = parser.parse_args(sys.argv[1:])
-    return test
+    arguments = parser.parse_args(sys.argv[1:])
+    
+    if arguments.output and not arguments.log:
+        print("Argument -o or --output can only be used when -l or --log is used!")
+
+    if arguments.output:
+        file = arguments.output
+        handler = FileHandler(file)
+        logger.addHandler(handler)
+    
+    return arguments
